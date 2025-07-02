@@ -10,7 +10,7 @@ class CHS_EventOrderSyncService {
         $this->api = new CHS_API('product_variation');
         $this->orderToBasketSync = new CHS_Sync('order');
         $this->eventPackageToProductVariation = new CHS_Sync('product_variation', false, null, true);
-        $this->simpleEventPackageToProduct = new CHS_Sync('simple_product');
+        $this->simpleEventPackageToProduct = new CHS_Sync('simple_product', false, null, true);
         add_action('woocommerce_checkout_create_order', [$this, 'handleOrderProcessed'], 11); // After WC validation, before order creation
         add_action('woocommerce_checkout_order_created', [$this, 'attachBasketTokenToOrder'], 10, 1);
         add_action('woocommerce_payment_complete', [$this, 'handlePaymentComplete'], 11);

@@ -264,6 +264,17 @@ if (!class_exists('CHS_EventSyncService')) {
                     if (isset($package->id)) {
                         $this->simpleEventPackageToProduct->set($package->id, $wcProduct->get_id());
                     }
+                      // Set order rule custom fields for simple products
+                    if (isset($package->min_together)) {
+                        update_field('package_minimum_qty', intval($package->min_together), $wcProduct->get_id());
+                    }
+                    
+                    if (isset($package->max_together)) {
+                        update_field('package_maximum_qty', intval($package->max_together), $wcProduct->get_id());
+                    }
+                    
+                    // Set quantity type - assuming this is always 'Per Person' for now
+                    update_field('package_quantity_type', 'Per Person', $wcProduct->get_id());
                 }
             } else {
                 // For variable products, sync event packages as variations
@@ -623,7 +634,6 @@ if (!class_exists('CHS_EventSyncService')) {
                         $variation->set_manage_stock(true);
                         $variation->set_stock_quantity($stock);
                         $variation->set_stock_status($stock <= 0 ? 'outofstock' : 'instock');
-
                         $variation_id = $variation->save();
 
                         if ($variation_id) {
@@ -635,6 +645,17 @@ if (!class_exists('CHS_EventSyncService')) {
                             }
 
                             update_post_meta($variation_id, "attribute_$attributeTaxonomyName", $packageTerms[$package->id]->slug);
+                              // Set order rule custom fields
+                            if (isset($package->min_together)) {
+                                update_field('package_minimum_qty', intval($package->min_together), $variation_id);
+                            }
+                            
+                            if (isset($package->max_together)) {
+                                update_field('package_maximum_qty', intval($package->max_together), $variation_id);
+                            }
+                            
+                            // Set quantity type - assuming this is always 'Per Person' for now
+                            update_field('package_quantity_type', 'Per Person', $variation_id);
                         }
                     }
 
@@ -786,6 +807,18 @@ if (!class_exists('CHS_EventSyncService')) {
                 
                 // Save the simple product with updated data
                 $wcProduct->save();
+                  // Set order rule custom fields for simple products
+                if (isset($eventPackage->min_together)) {
+                    update_field('package_minimum_qty', intval($eventPackage->min_together), $wcProduct->get_id());
+                }
+                
+                if (isset($eventPackage->max_together)) {
+                    update_field('package_maximum_qty', intval($eventPackage->max_together), $wcProduct->get_id());
+                }
+                
+                // Set quantity type - assuming this is always 'Per Person' for now
+                update_field('package_quantity_type', 'Per Person', $wcProduct->get_id());
+                
                 return;
             }
 
@@ -946,8 +979,7 @@ if (!class_exists('CHS_EventSyncService')) {
                 $variation->set_stock_quantity($stock);
                 $variation->set_stock_status($stock <= 0 ? 'outofstock' : 'instock');
             }
-            
-            // Save variation and handle post-save tasks
+              // Save variation and handle post-save tasks
             $variation_id = $variation->save();
             
             if ($variation_id) {
@@ -966,6 +998,17 @@ if (!class_exists('CHS_EventSyncService')) {
                         update_post_meta($variation_id, "attribute_{$attributeTaxonomyName}", $termSlug);
                     }
                 }
+                  // Set order rule custom fields
+                if (isset($eventPackage->min_together)) {
+                    update_field('package_minimum_qty', intval($eventPackage->min_together), $variation_id);
+                }
+                
+                if (isset($eventPackage->max_together)) {
+                    update_field('package_maximum_qty', intval($eventPackage->max_together), $variation_id);
+                }
+                
+                // Set quantity type - assuming this is always 'Per Person' for now
+                update_field('package_quantity_type', 'Per Person', $variation_id);
             }
             
             // Update prices and clear caches
